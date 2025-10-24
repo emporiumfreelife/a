@@ -16,16 +16,19 @@ import {
   Gift,
   Award,
   SlidersHorizontal,
-  Plus
+  Plus,
+  LayoutDashboard
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import MemberDashboard from '../components/MemberDashboard';
+import CreatorDashboard from '../components/CreatorDashboard';
 
 export default function Projects() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Tabs: hire | apply | sponsor | recognition
-  const [activeTab, setActiveTab] = useState<'hire' | 'add' | 'apply' | 'sponsor' | 'recognition'>(
+  // Tabs: hire | add | apply | manage | sponsor | recognition
+  const [activeTab, setActiveTab] = useState<'hire' | 'add' | 'apply' | 'manage' | 'sponsor' | 'recognition'>(
     user?.role === 'creator' ? 'apply' : 'hire'
   );
 
@@ -630,6 +633,22 @@ export default function Projects() {
             <Briefcase className="w-5 h-5" />
             <span>Apply</span>
           </button>
+
+          {/* Management tab - only visible when user is signed in */}
+          {user && (
+            <button
+              onClick={() => setActiveTab('manage')}
+              className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
+                activeTab === 'manage'
+                  ? 'bg-gradient-to-r from-rose-500 to-purple-600 text-white shadow-lg'
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <LayoutDashboard className="w-5 h-5" />
+              <span>Management</span>
+            </button>
+          )}
+
           <button
             onClick={() => setActiveTab('sponsor')}
             className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
@@ -750,10 +769,15 @@ export default function Projects() {
         </div>
 
         {/* Content */}
-        <div className="grid lg:grid-cols-3 gap-6">
+        {activeTab === 'manage' ? (
+          <div>
+            {user?.role === 'member' ? <MemberDashboard /> : <CreatorDashboard />}
+          </div>
+        ) : (
+          <div className="grid lg:grid-cols-3 gap-6">
 
-          {/* Add Tab Content */}
-          {activeTab === 'add' && (
+            {/* Add Tab Content */}
+            {activeTab === 'add' && (
             <div className="glass-effect rounded-2xl overflow-hidden hover-lift p-6 lg:col-span-3">
               <h3 className="text-xl font-semibold text-white mb-4">Create a new job posting</h3>
               <AddJobForm
@@ -1084,35 +1108,36 @@ export default function Projects() {
                 </div>
               </div>
             ))}
-        </div>
 
-        {/* Empty States */}
-        {activeTab === 'apply' && filteredProjects.length === 0 && (
-          <div className="text-center py-12">
-            <Briefcase className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-xl font-semibold text-white mb-2">No jobs found</h3>
-            <p className="text-gray-400">Try adjusting your search or filters.</p>
-          </div>
-        )}
-        {activeTab === 'hire' && entityType === 'talents' && filteredTalents.length === 0 && (
-          <div className="text-center py-12">
-            <User className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-xl font-semibold text-white mb-2">No talents found</h3>
-            <p className="text-gray-400">Try adjusting your search or filters.</p>
-          </div>
-        )}
-        {activeTab === 'hire' && entityType === 'teams' && filteredTeams.length === 0 && (
-          <div className="text-center py-12">
-            <Users className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-xl font-semibold text-white mb-2">No teams found</h3>
-            <p className="text-gray-400">Try adjusting your search or filters.</p>
-          </div>
-        )}
-        {activeTab === 'hire' && entityType === 'agencies' && filteredAgencies.length === 0 && (
-          <div className="text-center py-12">
-            <Building className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-xl font-semibold text-white mb-2">No agencies found</h3>
-            <p className="text-gray-400">Try adjusting your search or filters.</p>
+            {/* Empty States */}
+            {activeTab === 'apply' && filteredProjects.length === 0 && (
+              <div className="text-center py-12">
+                <Briefcase className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-xl font-semibold text-white mb-2">No jobs found</h3>
+                <p className="text-gray-400">Try adjusting your search or filters.</p>
+              </div>
+            )}
+            {activeTab === 'hire' && entityType === 'talents' && filteredTalents.length === 0 && (
+              <div className="text-center py-12">
+                <User className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-xl font-semibold text-white mb-2">No talents found</h3>
+                <p className="text-gray-400">Try adjusting your search or filters.</p>
+              </div>
+            )}
+            {activeTab === 'hire' && entityType === 'teams' && filteredTeams.length === 0 && (
+              <div className="text-center py-12">
+                <Users className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-xl font-semibold text-white mb-2">No teams found</h3>
+                <p className="text-gray-400">Try adjusting your search or filters.</p>
+              </div>
+            )}
+            {activeTab === 'hire' && entityType === 'agencies' && filteredAgencies.length === 0 && (
+              <div className="text-center py-12">
+                <Building className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                <h3 className="text-xl font-semibold text-white mb-2">No agencies found</h3>
+                <p className="text-gray-400">Try adjusting your search or filters.</p>
+              </div>
+            )}
           </div>
         )}
       </div>
